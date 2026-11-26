@@ -85,6 +85,11 @@ function syncViewport(): void {
     const kb = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
     setVar('--vvh', `${Math.round(height)}px`);
     setVar('--kb', `${Math.round(kb)}px`);
+    // Lock screen only: when the keyboard opens, iOS nudges the page up even if the field is
+    // already visible, which pushed the logo under the notch. Move the content back down by the
+    // same amount so it stays exactly where it was. (Not on scrolling screens: that flickered.)
+    const nudge = ui.view === 'lock' && vv ? Math.max(0, Math.round(vv.offsetTop + window.scrollY)) : 0;
+    setVar('--gate-shift', `${nudge}px`);
     syncTyping();
   });
 }
@@ -104,6 +109,7 @@ function syncTyping(): void {
 }
 vv?.addEventListener('resize', syncViewport);
 vv?.addEventListener('scroll', syncViewport);
+addEventListener('scroll', () => { if (ui.view === 'lock') syncViewport(); }, { passive: true });
 // Like iPhone's own apps: starting to scroll the results closes the search keyboard.
 // With the keyboard open iOS shifts the whole page while scrolling, which made the top flicker.
 document.addEventListener('touchmove', (e) => {
@@ -487,7 +493,7 @@ function lockView(): HTMLElement {
     autoFocus(pass);
   }).catch(() => autoFocus(pass));
 
-  return h('main', { class: 'view gate' },
+  return h('main', { class: 'view gate lock-gate' },
     h('div', { class: 'gate-hero' }, lockIcon, h('h1', { class: 'gate-title' }, 'Vault is locked'), sub),
     form,
     // Face ID at the bottom: the passphrase field stays high, above the keyboard, so nothing moves.

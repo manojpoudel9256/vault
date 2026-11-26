@@ -865,6 +865,8 @@ body::after {
 }
 .gate-face:not(:has(> :not([hidden]))) { display: none; }
 .gate-face .face-btn { width: 100%; }
+/* Undo iOS's keyboard nudge on the lock screen (see --gate-shift in main.ts). */
+.lock-gate { position: relative; top: var(--gate-shift, 0px); }
 
 /* ------------------------------------------------------------ theme switch (Settings) */
 .theme-btn .ic { transition: transform 0.4s var(--ease-out); }
