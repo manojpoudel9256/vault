@@ -871,3 +871,11 @@ body::after {
 /* ------------------------------------------------------------ theme switch (Settings) */
 .theme-btn .ic { transition: transform 0.4s var(--ease-out); }
 .theme-btn:active .ic { transform: rotate(-30deg) scale(0.9); }
+
+/* ------------------------------------------------------------ list order (Newest / A–Z / By type) */
+.sort-bar { display: flex; align-items: center; gap: 10px; margin: 2px 2px 4px; }
+.sort-label { font-size: calc(13px * var(--fs)); font-weight: 600; color: var(--text-3); flex: none; }
+.sort-bar .segmented { flex: 1; max-width: 300px; padding: 2px; }
+.sort-bar .seg { min-height: calc(32px * var(--fs)); font-size: calc(13px * var(--fs)); padding: 0 6px; }
+.section-title.time-head { margin-top: 12px; font-size: calc(13.5px * var(--fs)); color: var(--text-2); font-weight: 650; }
+.results > .sort-bar + .time-head { margin-top: 4px; }

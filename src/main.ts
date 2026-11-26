@@ -8,6 +8,7 @@ import { appLogo, icon, brandFor, logoSvg, type IconName } from './icons';
 import type { Draft } from './parse';
 import { interpret, parseQuery, search } from './search';
 import { passphraseProblem, strength } from './strength';
+import { sortEntries, timeGroup, type SortMode } from './sort';
 import { CATEGORIES, cat, entryIconName, inferCategory, typeFor, type Category } from './categories';
 import {
   createFacePasskey, disableFaceId, faceIdAvailable, faceIdEnabled, faceIdState, finishFaceId, notePassphraseUnlock, passphraseFromFaceId,
@@ -217,6 +218,16 @@ function setTextSize(t: TextSize, store = true): void {
   if (store) try { localStorage.setItem(TEXT_KEY, t); } catch { /* storage blocked */ }
 }
 setTextSize(textSize(), false);
+
+// List order: newest first unless changed (remembered on this device; not a secret).
+const SORT_KEY = 'memo-vault:sort';
+function sortMode(): SortMode {
+  try { const m = localStorage.getItem(SORT_KEY); if (m === 'newest' || m === 'az' || m === 'type') return m; } catch { /* storage blocked */ }
+  return 'newest';
+}
+function setSortMode(m: SortMode): void {
+  try { localStorage.setItem(SORT_KEY, m); } catch { /* storage blocked */ }
+}
 
 // Light / dark theme. Follows the iPhone setting until the sun/moon switch in Settings is used.
 type Theme = 'light' | 'dark';
@@ -650,14 +661,28 @@ function updateResults(): void {
       }
     }
   } else {
-    const byName = (a: Entry, b: Entry) => a.service.localeCompare(b.service) || a.account.localeCompare(b.account);
     let i = 0;
-    // Grouped by category, in a fixed order, each with its icon and count.
-    for (const c of CATEGORIES) {
-      const list = pool.filter((e) => e.category === c.id).sort(byName);
-      if (!list.length) continue;
-      out.push(h('h2', { class: 'section-title group-head', 'data-cat': c.id }, h('span', { class: 'section-ic' }, icon(c.icon)), c.plural, h('span', { class: 'count' }, String(list.length))));
-      list.forEach((e) => out.push(entryRow(e, i++)));
+    out.push(h('div', { class: 'sort-bar' }, h('span', { class: 'sort-label' }, 'Sort'),
+      segmented<SortMode>([['newest', 'Newest'], ['az', 'A–Z'], ['type', 'By type']], sortMode(), (m) => { setSortMode(m); updateResults(); }, 'Sort the list')));
+    const mode = sortMode();
+    if (mode === 'type') {
+      // Grouped by category, in a fixed order, each with its icon and count.
+      for (const c of CATEGORIES) {
+        const list = sortEntries(pool.filter((e) => e.category === c.id), 'az');
+        if (!list.length) continue;
+        out.push(h('h2', { class: 'section-title group-head', 'data-cat': c.id }, h('span', { class: 'section-ic' }, icon(c.icon)), c.plural, h('span', { class: 'count' }, String(list.length))));
+        list.forEach((e) => out.push(entryRow(e, i++)));
+      }
+    } else if (mode === 'az') {
+      sortEntries(pool, 'az').forEach((e) => out.push(entryRow(e, i++)));
+    } else {
+      // Newest first, under Today / Yesterday / This week / ... headings.
+      let heading = '';
+      for (const e of sortEntries(pool, 'newest')) {
+        const g = timeGroup(e.updatedAt);
+        if (g !== heading) { heading = g; out.push(h('h2', { class: 'section-title time-head' }, g)); }
+        out.push(entryRow(e, i++));
+      }
     }
   }
   resultsEl.replaceChildren(...out);

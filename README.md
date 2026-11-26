@@ -25,6 +25,7 @@ hosting only serves the app's code.
 
 - **Ask in plain words**: "gmail password", "4 digit pin of my bank", "passport number". On-device search understands synonyms, typos and PIN or password hints, and shows every match when a service has several logins (tags such as *PC* and *Mobile*).
 - **Categories with colours and logos**: passwords, bank & PINs, cards, ID documents, phone numbers, addresses, Wi-Fi and notes. Official brand logos come from [Simple Icons](https://simpleicons.org), bundled into the app.
+- **Newest first**: the list opens with what you saved or changed most recently on top, under Today / Yesterday / This week headings. Switch to A–Z or By type any time.
 - **Password history**: changing a value keeps the old one with its date.
 - **Reuse warning**: flags entries that share a password or PIN and links you to a strong generator.
 - **Encrypted backup and restore**: export a file to iCloud Drive or Files; merge it or replace on another phone.
