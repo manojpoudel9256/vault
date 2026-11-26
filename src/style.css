@@ -847,24 +847,24 @@ body::after {
 .gate-lock.is-open .app-logo { animation: logo-open 0.5s var(--ease-out); }
 @keyframes logo-open { 0% { transform: scale(0.9) rotate(-8deg); } 60% { transform: scale(1.08) rotate(3deg); } 100% { transform: none; } }
 
-/* ------------------------------------------------------------ lock / setup screen with the keyboard open
-   Laid out from the top (not centred), so opening the iPhone keyboard does not push the logo and
-   title off the screen. While typing, the subtitle and Face ID button step aside and the logo
-   shrinks, so the passphrase field stays above the keyboard without the page scrolling. */
+/* ------------------------------------------------------------ lock / setup screen and the keyboard
+   Nothing moves when the keyboard opens. The screen is laid out from the top, with the passphrase
+   field and Unlock button high enough to stay above the iPhone keyboard, so iOS has no reason to
+   scroll the page. The Face ID button sits at the bottom (thumb reach); the keyboard simply covers
+   it while typing. */
 .gate {
   justify-content: flex-start;
-  padding-top: calc(var(--top) + clamp(28px, 10vh, 110px));
-  transition: padding-top 0.3s var(--ease-out);
+  gap: 24px;
+  padding-top: calc(var(--top) + clamp(20px, 5vh, 56px));
 }
-.gate-lock { transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-radius 0.3s, margin 0.3s; }
-body.is-typing .gate { padding-top: calc(var(--top) + 18px); gap: 18px; }
-body.is-typing .gate .gate-lock { width: 52px; height: 52px; border-radius: 17px; margin-bottom: 0; }
-body.is-typing .gate .gate-lock .app-logo { width: 30px; height: 30px; }
-body.is-typing .gate .gate-sub,
-body.is-typing .gate .face-btn,
-body.is-typing .gate .gate-or,
-body.is-typing .gate .notice { display: none; }
-body.is-typing .gate .gate-title { font-size: calc(22px * var(--fs)); }
+.gate-lock { width: 68px; height: 68px; border-radius: 22px; }
+.gate-lock .app-logo { width: 40px; height: 40px; }
+.gate-face {
+  margin-top: auto; width: 100%; max-width: 400px;
+  display: grid; justify-items: center; gap: 12px; padding-top: 12px;
+}
+.gate-face:not(:has(> :not([hidden]))) { display: none; }
+.gate-face .face-btn { width: 100%; }
 
 /* ------------------------------------------------------------ theme switch (Settings) */
 .theme-btn .ic { transition: transform 0.4s var(--ease-out); }

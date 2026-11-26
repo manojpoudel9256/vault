@@ -473,7 +473,7 @@ function lockView(): HTMLElement {
   }, { kind: 'primary', ic: 'scan-smiley' });
   faceBtn.classList.add('face-btn');
   faceBtn.hidden = true;
-  const orLine = h('p', { class: 'gate-or', hidden: true }, 'or use your passphrase');
+  const orLine = h('p', { class: 'gate-or', hidden: true }, 'or');
 
   faceIdState().then((state) => {
     if (state === 'ok') {
@@ -489,8 +489,9 @@ function lockView(): HTMLElement {
 
   return h('main', { class: 'view gate' },
     h('div', { class: 'gate-hero' }, lockIcon, h('h1', { class: 'gate-title' }, 'Vault is locked'), sub),
-    faceBtn, orLine,
     form,
+    // Face ID at the bottom: the passphrase field stays high, above the keyboard, so nothing moves.
+    h('div', { class: 'gate-face' }, orLine, faceBtn),
   );
 }
 
