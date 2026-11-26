@@ -1,10 +1,12 @@
 /*
   MEMO Vault design tokens.
   One accent (mint). Shape rule: buttons and chips are pills, cards and sheets 18px,
-  inputs and inner panels 12px. Dark by default, light follows the system setting.
+  inputs and inner panels 12px. Dark by default; light follows the system setting or the sun/moon switch in Settings.
 */
 :root {
-  color-scheme: dark light;
+  color-scheme: dark;
+  --c-login: #6ea8ff; --c-bank: #f5b94c; --c-id: #b493ff; --c-card: #ffa45c;
+  --c-phone: #5fd38a; --c-address: #ff8b7b; --c-wifi: #4fd2e8; --c-note: #f088c4;
   --bg: #0c0e11;
   --bg-2: #08090b;
   --surface: #14171b;
@@ -36,8 +38,10 @@
   --bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Light theme: follows the iPhone setting, unless a theme was chosen in Settings (html[data-theme]). */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
     --bg: #f3f4f6;
     --bg-2: #e8eaed;
     --surface: #ffffff;
@@ -57,7 +61,33 @@
     --shadow: 0 18px 50px rgb(30 40 50 / 0.14);
     --glass: rgb(255 255 255 / 0.75);
     --bar: rgb(243 244 246 / 0.88);
+    --c-login: #1f5fcc; --c-bank: #a35f00; --c-id: #6b45d1; --c-card: #b8520a;
+    --c-phone: #17803f; --c-address: #c2402d; --c-wifi: #0a7a90; --c-note: #b3307c;
   }
+}
+:root[data-theme='light'] {
+    color-scheme: light;
+    --bg: #f3f4f6;
+    --bg-2: #e8eaed;
+    --surface: #ffffff;
+    --surface-2: #f0f2f4;
+    --line: rgb(15 20 25 / 0.08);
+    --line-2: rgb(15 20 25 / 0.15);
+    --text: #10151a;
+    --text-2: #4a5360;
+    --text-3: #636c78;
+    --accent: #0c8269;
+    --accent-ink: #ffffff;
+    --accent-soft: rgb(12 130 105 / 0.1);
+    --danger: #c53b3b;
+    --danger-soft: rgb(197 59 59 / 0.08);
+    --warn: #9a6400;
+    --warn-soft: rgb(214 150 30 / 0.12);
+    --shadow: 0 18px 50px rgb(30 40 50 / 0.14);
+    --glass: rgb(255 255 255 / 0.75);
+    --bar: rgb(243 244 246 / 0.88);
+    --c-login: #1f5fcc; --c-bank: #a35f00; --c-id: #6b45d1; --c-card: #b8520a;
+    --c-phone: #17803f; --c-address: #c2402d; --c-wifi: #0a7a90; --c-note: #b3307c;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -665,24 +695,14 @@ body.is-typing .sheet .form-actions { padding-bottom: 12px; }
 .section-ic .ic { width: 15px; height: 15px; color: var(--text); }
 
 /* Each category has its own colour, so the kind of entry is clear at a glance. */
-[data-cat='login'] { --cat: #6ea8ff; }
-[data-cat='bank'] { --cat: #f5b94c; }
-[data-cat='id'] { --cat: #b493ff; }
-[data-cat='card'] { --cat: #ffa45c; }
-[data-cat='phone'] { --cat: #5fd38a; }
-[data-cat='address'] { --cat: #ff8b7b; }
-[data-cat='wifi'] { --cat: #4fd2e8; }
-[data-cat='note'] { --cat: #f088c4; }
-@media (prefers-color-scheme: light) {
-  [data-cat='login'] { --cat: #1f5fcc; }
-  [data-cat='bank'] { --cat: #a35f00; }
-  [data-cat='id'] { --cat: #6b45d1; }
-  [data-cat='card'] { --cat: #b8520a; }
-  [data-cat='phone'] { --cat: #17803f; }
-  [data-cat='address'] { --cat: #c2402d; }
-  [data-cat='wifi'] { --cat: #0a7a90; }
-  [data-cat='note'] { --cat: #b3307c; }
-}
+[data-cat='login'] { --cat: var(--c-login); }
+[data-cat='bank'] { --cat: var(--c-bank); }
+[data-cat='id'] { --cat: var(--c-id); }
+[data-cat='card'] { --cat: var(--c-card); }
+[data-cat='phone'] { --cat: var(--c-phone); }
+[data-cat='address'] { --cat: var(--c-address); }
+[data-cat='wifi'] { --cat: var(--c-wifi); }
+[data-cat='note'] { --cat: var(--c-note); }
 [data-cat] { --cat-soft: color-mix(in srgb, var(--cat) 16%, transparent); --cat-line: color-mix(in srgb, var(--cat) 30%, transparent); }
 
 .tile[data-cat] { background: var(--cat-soft); border-color: var(--cat-line); }
@@ -817,3 +837,35 @@ body::after {
   background: var(--warn-soft); color: var(--text); font-size: calc(13.5px * var(--fs)); line-height: 1.4; }
 .reuse-warn .ic { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--warn); }
 .reuse-notice { margin-top: 14px; }
+
+/* ------------------------------------------------------------ app logo (speech bubble + keyhole) */
+.app-logo { display: block; width: 100%; height: 100%; }
+.brand-mark { background: none; color: var(--accent); border-radius: 0; }
+.brand-mark .app-logo { width: 100%; height: 100%; }
+.gate-lock { color: var(--accent); }
+.gate-lock .app-logo { width: 44px; height: 44px; transition: transform 0.45s var(--ease-out); }
+.gate-lock.is-open .app-logo { animation: logo-open 0.5s var(--ease-out); }
+@keyframes logo-open { 0% { transform: scale(0.9) rotate(-8deg); } 60% { transform: scale(1.08) rotate(3deg); } 100% { transform: none; } }
+
+/* ------------------------------------------------------------ lock / setup screen with the keyboard open
+   Laid out from the top (not centred), so opening the iPhone keyboard does not push the logo and
+   title off the screen. While typing, the subtitle and Face ID button step aside and the logo
+   shrinks, so the passphrase field stays above the keyboard without the page scrolling. */
+.gate {
+  justify-content: flex-start;
+  padding-top: calc(var(--top) + clamp(28px, 10vh, 110px));
+  transition: padding-top 0.3s var(--ease-out);
+}
+.gate-lock { transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-radius 0.3s, margin 0.3s; }
+body.is-typing .gate { padding-top: calc(var(--top) + 18px); gap: 18px; }
+body.is-typing .gate .gate-lock { width: 52px; height: 52px; border-radius: 17px; margin-bottom: 0; }
+body.is-typing .gate .gate-lock .app-logo { width: 30px; height: 30px; }
+body.is-typing .gate .gate-sub,
+body.is-typing .gate .face-btn,
+body.is-typing .gate .gate-or,
+body.is-typing .gate .notice { display: none; }
+body.is-typing .gate .gate-title { font-size: calc(22px * var(--fs)); }
+
+/* ------------------------------------------------------------ theme switch (Settings) */
+.theme-btn .ic { transition: transform 0.4s var(--ease-out); }
+.theme-btn:active .ic { transform: rotate(-30deg) scale(0.9); }

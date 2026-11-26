@@ -18,7 +18,7 @@ function serviceWorker(): Plugin {
     apply: 'build',
     generateBundle(_opts, bundle) {
       const files = Object.keys(bundle).map((f) => '/' + f);
-      const precache = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', ...files];
+      const precache = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/logo.svg', ...files];
       const version = createHash('sha256').update(precache.join('|')).digest('hex').slice(0, 12);
       const src = readFileSync(new URL('./sw/sw.js', import.meta.url), 'utf8')
         .replace('__PRECACHE__', JSON.stringify(precache))

@@ -4,7 +4,7 @@ import './style.css';
 
 import { append, fmtDate, h, reducedMotion, relDays, scramble, shake, toast, transition } from './dom';
 import { extractFromImage, geminiMatch, prepareImage } from './gemini';
-import { icon, brandFor, logoSvg, type IconName } from './icons';
+import { appLogo, icon, brandFor, logoSvg, type IconName } from './icons';
 import type { Draft } from './parse';
 import { interpret, parseQuery, search } from './search';
 import { passphraseProblem, strength } from './strength';
@@ -88,10 +88,19 @@ function syncViewport(): void {
     syncTyping();
   });
 }
+const isTypingTarget = (a: Element | null): boolean => !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'SELECT'
+  || (a.tagName === 'INPUT' && !['checkbox', 'radio', 'file', 'button', 'submit'].includes((a as HTMLInputElement).type)));
+
+// The compact "typing" layout turns on at once, but turns off only after a short pause: tapping
+// "Unlock" while the keyboard is up moves focus off the field (some browsers focus the button),
+// and an instant re-layout would move the button away before the tap lands.
+let typingOff = 0;
 function syncTyping(): void {
-  const a = document.activeElement as HTMLElement | null;
-  const typing = !!a && (a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || (a.tagName === 'INPUT' && !['checkbox', 'radio', 'file', 'button', 'submit'].includes((a as HTMLInputElement).type)));
-  document.body.classList.toggle('is-typing', typing);
+  clearTimeout(typingOff);
+  if (isTypingTarget(document.activeElement)) { document.body.classList.add('is-typing'); return; }
+  typingOff = window.setTimeout(() => {
+    if (!isTypingTarget(document.activeElement)) document.body.classList.remove('is-typing');
+  }, 350);
 }
 vv?.addEventListener('resize', syncViewport);
 vv?.addEventListener('scroll', syncViewport);
@@ -102,7 +111,7 @@ document.addEventListener('touchmove', (e) => {
   if (a?.classList.contains('ask-input') && !(e.target as Element | null)?.closest?.('.ask')) a.blur();
 }, { passive: true });
 document.addEventListener('focusin', syncTyping);
-document.addEventListener('focusout', () => setTimeout(syncTyping, 50));
+document.addEventListener('focusout', () => setTimeout(syncTyping, 0));
 syncViewport();
 
 // ---------------------------------------------------------------- auto-lock
@@ -203,6 +212,41 @@ function setTextSize(t: TextSize, store = true): void {
 }
 setTextSize(textSize(), false);
 
+// Light / dark theme. Follows the iPhone setting until the sun/moon switch in Settings is used.
+type Theme = 'light' | 'dark';
+const THEME_KEY = 'memo-vault:theme';
+const systemTheme = (): Theme => (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+function savedTheme(): Theme | null {
+  try { const t = localStorage.getItem(THEME_KEY); return t === 'light' || t === 'dark' ? t : null; } catch { return null; }
+}
+const currentTheme = (): Theme => savedTheme() ?? systemTheme();
+function applyTheme(t: Theme | null): void {
+  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  // Status bar / browser chrome colour follows the theme too.
+  const color = (t ?? systemTheme()) === 'light' ? '#f3f4f6' : '#0c0e11';
+  document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((m) => { m.content = color; });
+}
+function setTheme(t: Theme): void {
+  try { localStorage.setItem(THEME_KEY, t); } catch { /* storage blocked */ }
+  applyTheme(t);
+}
+applyTheme(savedTheme());
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (!savedTheme()) applyTheme(null); });
+
+/** Sun in dark mode (tap for light), moon in light mode (tap for dark). */
+function themeButton(): HTMLButtonElement {
+  const label = () => (currentTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  const b: HTMLButtonElement = iconBtn(currentTheme() === 'dark' ? 'sun' : 'moon', label(), () => {
+    const next: Theme = currentTheme() === 'dark' ? 'light' : 'dark';
+    transition(() => setTheme(next));
+    b.replaceChildren(icon(next === 'dark' ? 'sun' : 'moon'));
+    b.setAttribute('aria-label', label());
+    b.title = label();
+    toast(next === 'dark' ? 'Dark mode' : 'Light mode');
+  }, 'theme-btn');
+  return b;
+}
+
 function backButton(): HTMLElement {
   return h('button', { class: 'back', type: 'button', onclick: () => show('main') }, icon('caret-left'), h('span', {}, 'Vault'));
 }
@@ -275,7 +319,7 @@ async function requestPersistence(): Promise<void> {
 function setupView(): HTMLElement {
   const wrap = h('main', { class: 'view gate' });
   const hero = h('div', { class: 'gate-hero' },
-    h('div', { class: 'gate-lock' }, icon('lock-simple')),
+    h('div', { class: 'gate-lock' }, appLogo()),
     h('h1', { class: 'gate-title' }, ui.setupMode === 'create' ? 'Create your vault' : 'Restore your vault'),
     h('p', { class: 'gate-sub' }, ui.setupMode === 'create'
       ? 'Your passwords are encrypted on this iPhone with a passphrase only you know.'
@@ -363,8 +407,15 @@ function setupView(): HTMLElement {
 
 // ---------------------------------------------------------------- lock
 
+/** Puts the cursor in the field on computers only. On a phone the keyboard would not open by
+ *  itself, so focusing would only switch the screen to its compact "typing" layout too early. */
+function autoFocus(el: HTMLElement): void {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  setTimeout(() => el.focus(), 300);
+}
+
 function lockView(): HTMLElement {
-  const lockIcon = h('div', { class: 'gate-lock' }, icon('lock-simple'));
+  const lockIcon = h('div', { class: 'gate-lock' }, appLogo());
   const pass = input({ type: 'password', autocomplete: 'current-password', enterkeyhint: 'go', 'aria-describedby': 'lock-err' });
   const err = h('p', { class: 'field-error', id: 'lock-err', role: 'alert' });
   const submit = btn('Unlock', () => {}, { kind: 'primary', type: 'submit', ic: 'arrow-right' });
@@ -395,7 +446,7 @@ function lockView(): HTMLElement {
   const opened = () => {
     ui.failures = 0;
     pass.value = '';
-    lockIcon.replaceChildren(icon('lock-simple-open'));
+    // The keyhole logo gives a little "turn" as the vault opens (see .gate-lock.is-open).
     lockIcon.classList.add('is-open');
     setTimeout(() => show('main'), 360);
   };
@@ -433,8 +484,8 @@ function lockView(): HTMLElement {
       return;
     }
     if (state === 'expired') sub.textContent = 'Face ID needs your master passphrase once a week. Enter it to keep using Face ID.';
-    setTimeout(() => pass.focus(), 300);
-  }).catch(() => setTimeout(() => pass.focus(), 300));
+    autoFocus(pass);
+  }).catch(() => autoFocus(pass));
 
   return h('main', { class: 'view gate' },
     h('div', { class: 'gate-hero' }, lockIcon, h('h1', { class: 'gate-title' }, 'Vault is locked'), sub),
@@ -450,7 +501,7 @@ let resultsEl: HTMLElement | null = null;
 function mainView(): HTMLElement {
   const v = vault();
   const wrap = h('main', { class: 'view main' });
-  const brand = h('div', { class: 'brand' }, h('span', { class: 'brand-mark' }, icon('lock-simple')), h('span', {}, 'Vault'));
+  const brand = h('div', { class: 'brand' }, h('span', { class: 'brand-mark' }, appLogo()), h('span', {}, 'Vault'));
   // Title bar and search stay pinned together at the top while the list scrolls.
   const head = h('header', { class: 'sticky-head' }, topbar(brand, [iconBtn('gear-six', 'Settings', () => show('settings')), iconBtn('lock-simple', 'Lock now', doLock)]));
   wrap.append(head);
@@ -1158,7 +1209,7 @@ function settingsView(): HTMLElement {
   const v = vault();
   const s = v.settings;
   const wrap = h('main', { class: 'view page' });
-  wrap.append(topbar(backButton()), h('div', { class: 'page-head' }, h('h1', {}, 'Settings')));
+  wrap.append(topbar(backButton(), [themeButton()]), h('div', { class: 'page-head' }, h('h1', {}, 'Settings')));
 
   // Text size (kept on this device only; it is not a secret)
   wrap.append(group('Text size',

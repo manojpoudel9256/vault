@@ -7,7 +7,7 @@ import {
 } from 'simple-icons';
 const files = import.meta.glob(
   [
-    '../node_modules/@phosphor-icons/core/assets/regular/{lock-simple,lock-simple-open,magnifying-glass,plus,eye,eye-slash,copy,check,pencil-simple,clock-counter-clockwise,gear-six,download-simple,upload-simple,sparkle,clipboard-text,trash,x,caret-left,caret-down,warning,shield-check,arrow-right,envelope-simple,bank,wifi-high,google-logo,facebook-logo,instagram-logo,apple-logo,whatsapp-logo,x-logo,linkedin-logo,youtube-logo,microsoft-outlook-logo,github-logo,amazon-logo,spotify-logo,tiktok-logo,telegram-logo,arrows-clockwise,key,file-arrow-up,dice-five,identification-card,phone,map-pin,note,squares-four,airplane-tilt,certificate,steering-wheel,credit-card,password,caret-right,wallet,chart-line-up,currency-btc,laptop,device-mobile,game-controller,slack-logo,paypal-logo,open-ai-logo,train,flame,video-camera,graduation-cap,shopping-bag,database,globe,house-line,house,briefcase,folder-simple,lock-key,cake,user,cigarette-slash,code,money,diamond,piggy-bank,windows-logo,paper-plane-tilt,scan-smiley}.svg',
+    '../node_modules/@phosphor-icons/core/assets/regular/{lock-simple,lock-simple-open,magnifying-glass,plus,eye,eye-slash,copy,check,pencil-simple,clock-counter-clockwise,gear-six,download-simple,upload-simple,sparkle,clipboard-text,trash,x,caret-left,caret-down,warning,shield-check,arrow-right,envelope-simple,bank,wifi-high,google-logo,facebook-logo,instagram-logo,apple-logo,whatsapp-logo,x-logo,linkedin-logo,youtube-logo,microsoft-outlook-logo,github-logo,amazon-logo,spotify-logo,tiktok-logo,telegram-logo,arrows-clockwise,key,file-arrow-up,dice-five,identification-card,phone,map-pin,note,squares-four,airplane-tilt,certificate,steering-wheel,credit-card,password,caret-right,wallet,chart-line-up,currency-btc,laptop,device-mobile,game-controller,slack-logo,paypal-logo,open-ai-logo,train,flame,video-camera,graduation-cap,shopping-bag,database,globe,house-line,house,briefcase,folder-simple,lock-key,cake,user,cigarette-slash,code,money,diamond,piggy-bank,windows-logo,paper-plane-tilt,scan-smiley,sun,moon}.svg',
   ],
   { query: '?raw', import: 'default', eager: true },
 ) as Record<string, string>;
@@ -36,7 +36,7 @@ export type IconName =
   | 'currency-btc' | 'laptop' | 'device-mobile' | 'game-controller' | 'slack-logo' | 'paypal-logo' | 'open-ai-logo' | 'train'
   | 'flame' | 'video-camera' | 'graduation-cap' | 'shopping-bag' | 'database' | 'globe' | 'house-line' | 'house' | 'briefcase'
   | 'folder-simple' | 'lock-key' | 'cake' | 'user' | 'cigarette-slash' | 'code' | 'money' | 'diamond' | 'piggy-bank'
-  | 'windows-logo' | 'paper-plane-tilt' | 'scan-smiley';
+  | 'windows-logo' | 'paper-plane-tilt' | 'scan-smiley' | 'sun' | 'moon';
 
 export function icon(name: IconName): SVGElement {
   const tpl = cache.get(name);
@@ -101,6 +101,23 @@ export function brandFor(service: string): Brand | null {
   for (const [re, b] of LOCAL_BRANDS) if (re.test(service)) return b;
   for (const [re, b] of BRANDS) if (re.test(service)) return b;
   return null;
+}
+
+/** Vault's own logo: a speech bubble with a keyhole cut out ("ask your vault"). Same shape as public/icons/logo.svg. */
+export function appLogo(): SVGElement {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '16 18 68 70');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  svg.classList.add('app-logo');
+  const p = document.createElementNS(ns, 'path');
+  p.setAttribute('fill', 'currentColor');
+  p.setAttribute('fill-rule', 'evenodd');
+  p.setAttribute('d', 'M34 22H66A14 14 0 0 1 80 36V56A14 14 0 0 1 66 70H50L31 84L36 70H34A14 14 0 0 1 20 56V36A14 14 0 0 1 34 22Z'
+    + 'M45.8 48.8A8 8 0 1 1 54.2 48.8L55.5 61H44.5Z');
+  svg.append(p);
+  return svg;
 }
 
 /** Builds a Simple Icons logo (24x24 path) as an SVG element. No innerHTML. */

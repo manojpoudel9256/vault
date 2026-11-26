@@ -1,6 +1,8 @@
+<p align="center"><img src="public/icons/logo.svg" width="96" alt="Vault logo: a speech bubble with a keyhole"></p>
+
 # Vault
 
-**A private password, PIN and ID vault for iPhone, built as an installable web app.**
+**A private password, PIN and ID vault for iPhone, built as an installable web app. Ask it in plain words.**
 Everything is encrypted on the phone. There is no server, no account and no cloud copy: the
 hosting only serves the app's code.
 
@@ -28,7 +30,7 @@ hosting only serves the app's code.
 - **Encrypted backup and restore**: export a file to iCloud Drive or Files; merge it or replace on another phone.
 - **Face ID unlock (optional)**: via a passkey and the WebAuthn PRF extension (iOS 18+).
 - **Screenshot import (optional)**: Gemini reads a screenshot of a login or card, and you check every field before anything is saved.
-- **iPhone-friendly**: works offline, auto-locks, no zoom on input, adjustable text size (XS–XL), dark and light themes.
+- **iPhone-friendly**: works offline, auto-locks, no zoom on input, a lock screen that stays put when the keyboard opens, adjustable text size (XS–XL), and dark or light mode (follows the iPhone, or the sun/moon switch in Settings).
 
 ## Try it with the demo vault
 
