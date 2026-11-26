@@ -1,0 +1,18 @@
+node_modules
+dist
+
+# Local secrets and deploy settings
+.env*
+*.local
+.vercel
+.claude
+
+# Personal brand logos (show which services the owner uses) - local only
+src/brands.local.ts
+src/assets/brands/
+
+# Never commit real vault backups or restore files (the demo file is named demo-backup.json)
+*.memovault
+*.memovault.json
+vault-restore*
+vault-backup-*.json

@@ -1,0 +1,19 @@
+[
+  { "category": "login", "service": "Gmail", "account": "alex.demo@example.com", "type": "password", "secret": "Demo-Gm4il-Pass!", "tags": ["PC"], "notes": "Recovery email: alex.backup@example.com" },
+  { "category": "login", "service": "Gmail", "account": "alex.mobile@example.com", "type": "password", "secret": "Phone-Demo-77!", "tags": ["Mobile"] },
+  { "category": "login", "service": "GitHub", "account": "alex-demo", "type": "password", "secret": "gh-Demo-2026-xyz" },
+  { "category": "login", "service": "Facebook", "account": "alex.demo@example.com", "type": "password", "secret": "Shared-Demo-123" },
+  { "category": "login", "service": "Spotify", "account": "alex.demo@example.com", "type": "password", "secret": "Shared-Demo-123", "notes": "Same password as Facebook on purpose, to show the reuse warning." },
+  { "category": "login", "service": "Zoom", "account": "alex.demo@example.com", "type": "password", "secret": "Zoom-Demo-88#", "history": ["Old-Zoom-Pass-1"] },
+  { "category": "bank", "service": "Rakuten Bank", "account": "", "type": "pin", "secret": "4821", "tags": ["ATM"] },
+  { "category": "bank", "service": "PayPal", "account": "alex.demo@example.com", "type": "password", "secret": "PayPal-Demo-55!" },
+  { "category": "bank", "service": "Example Savings Bank", "account": "Alex Demo", "type": "number", "secret": "0001234567", "notes": "Branch 101 (example)" },
+  { "category": "card", "service": "Visa Demo Card", "account": "ALEX DEMO", "type": "number", "secret": "4242 4242 4242 4242", "notes": "Expiry: 12/30 (test card number)" },
+  { "category": "card", "service": "Visa Demo Card", "account": "ALEX DEMO", "type": "pin", "secret": "123", "tags": ["Security code"] },
+  { "category": "id", "service": "Passport", "account": "Alex Demo", "type": "text", "secret": "XX0000000", "notes": "Expires 2035 (fake)" },
+  { "category": "id", "service": "Driving licence", "account": "Alex Demo", "type": "text", "secret": "00-00-00000000" },
+  { "category": "phone", "service": "My phone", "account": "", "type": "number", "secret": "+1 555 0100" },
+  { "category": "address", "service": "Home address", "account": "Me", "type": "text", "secret": "1-2-3 Example Street\nSample City 100-0000" },
+  { "category": "wifi", "service": "Home Wi-Fi", "account": "Home", "type": "password", "secret": "wifi-demo-key-2026" },
+  { "category": "note", "service": "Locker code", "account": "", "type": "text", "secret": "7-3-9" }
+]
