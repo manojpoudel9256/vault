@@ -6,7 +6,7 @@
 Everything is encrypted on the phone. There is no server, no account and no cloud copy: the
 hosting only serves the app's code.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Vite](https://img.shields.io/badge/Vite-8-646cff) ![PWA](https://img.shields.io/badge/PWA-offline-5fe0c4) ![Tests](https://img.shields.io/badge/tests-28%20passing-2ea44f) ![Dependencies](https://img.shields.io/badge/runtime%20deps-1-informational) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Vite](https://img.shields.io/badge/Vite-8-646cff) ![PWA](https://img.shields.io/badge/PWA-offline-5fe0c4) ![Tests](https://img.shields.io/badge/tests-31%20passing-2ea44f) ![Dependencies](https://img.shields.io/badge/runtime%20deps-1-informational) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 <p align="center">
   <img src="docs/screenshots/02-vault-dark.png" width="230" alt="Vault list with categories and brand logos">
@@ -73,7 +73,7 @@ This is a personal project and has **not** had an independent third-party audit.
 ```bash
 npm install
 npm run dev        # development server
-npm test           # 28 tests: crypto, vault, backups, Face ID, passphrase rules, demo file
+npm test           # 31 tests: crypto, vault, backups, Face ID, passphrase rules, sorting, demo file
 npm run build      # type-check and production build into dist/
 npm run preview    # serve the build with the production security headers
 ```
