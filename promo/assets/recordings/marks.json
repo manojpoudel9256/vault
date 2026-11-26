@@ -1,0 +1,12 @@
+{
+ "unlockStart": 0.6,
+ "unlockTap": 2.67,
+ "listShown": 3.596,
+ "askStart": 5.102,
+ "revealTap": 7.713,
+ "askEnd": 9.537,
+ "reuseStart": 10.26,
+ "reuseOpen": 11.198,
+ "reuseEnd": 13.419,
+ "end": 13.72
+}

@@ -9,6 +9,13 @@ hosting only serves the app's code.
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Vite](https://img.shields.io/badge/Vite-8-646cff) ![PWA](https://img.shields.io/badge/PWA-offline-5fe0c4) ![Tests](https://img.shields.io/badge/tests-31%20passing-2ea44f) ![Dependencies](https://img.shields.io/badge/runtime%20deps-1-informational) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 <p align="center">
+  <img src="docs/vault-promo.gif" width="720" alt="Vault in 16 seconds: unlock, ask 'gmail password', spot reused passwords">
+</p>
+<p align="center">
+  <a href="docs/vault-promo.mp4">Watch in full quality (MP4, 1080p)</a> · made with <a href="https://hyperframes.heygen.com">HyperFrames</a> from real app footage, source in <a href="promo"><code>promo/</code></a>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/02-vault-dark.png" width="230" alt="Vault list with categories and brand logos">
   <img src="docs/screenshots/03-search-dark.png" width="230" alt="Search: 'gmail password' shows both Gmail logins">
   <img src="docs/screenshots/04-reuse-warning-light.png" width="230" alt="Warning for a reused password">

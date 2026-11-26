@@ -1,0 +1,81 @@
+<template>
+  <style>
+    @font-face { font-family: 'Geist'; src: url('assets/fonts/geist-latin.woff2') format('woff2'); font-weight: 100 900; }
+    #root { position: absolute; inset: 0; font-family: 'Geist', sans-serif; color: #eef1f4; }
+    #demo-glow {
+      position: absolute; left: 790px; top: -60px; width: 1000px; height: 1200px;
+      background: radial-gradient(closest-side, rgba(95, 224, 196, 0.10), rgba(95, 224, 196, 0) 70%);
+    }
+    /* Camera: centred on (1290, 540); moves are GSAP x / y / scale. */
+    #demo-cam { position: absolute; left: 1012px; top: -40.5px; width: 556px; height: 1161px; }
+    #demo-phone {
+      position: absolute; inset: 0; border-radius: 76px; padding: 18px;
+      background: #1a1d22; box-shadow: 0 0 0 2px #2a2f36, 0 40px 120px rgba(0, 0, 0, 0.55);
+    }
+    #demo-screen { position: relative; width: 520px; height: 1125px; border-radius: 58px; overflow: hidden; background: #0c0e11; }
+    /* Every child of the screen (the videos, and the frames the renderer draws in their place) fills it. */
+    #demo-screen > * { position: absolute; left: 0; top: 0; width: 100% !important; height: 100% !important; object-fit: cover; }
+    .cap { position: absolute; left: 150px; top: 380px; width: 700px; }
+    .cap h2 { font-size: 78px; font-weight: 650; letter-spacing: -0.03em; line-height: 1.04; }
+    .cap h2 .hi { color: #5fe0c4; }
+    .cap h2 span { display: inline-block; }
+    .cap p { margin-top: 26px; font-size: 30px; font-weight: 450; line-height: 1.35; color: #a4adb7; }
+  </style>
+  <div id="root" data-composition-id="demo" data-width="1920" data-height="1080">
+    <div id="demo-glow" class="clip" data-start="0" data-duration="10.5" data-track-index="0" data-layout-ignore></div>
+
+    <div id="demo-cam" data-layout-allow-overflow>
+      <div id="demo-phone">
+        <div id="demo-screen">
+          <!-- One take of the real app (demo vault), three trims. -->
+          <video id="demo-unlock" class="clip" src="assets/recordings/vault-take.mp4" width="520" height="1125" muted playsinline
+            data-start="0" data-duration="3.05" data-media-start="0.75" data-playback-rate="1.25" data-track-index="1"></video>
+          <video id="demo-ask" class="clip" src="assets/recordings/vault-take.mp4" width="520" height="1125" muted playsinline
+            data-start="3.05" data-duration="4" data-media-start="4.9" data-playback-rate="1.15" data-track-index="2"></video>
+          <video id="demo-reuse" class="clip" src="assets/recordings/vault-take.mp4" width="520" height="1125" muted playsinline
+            data-start="7.05" data-duration="3.45" data-media-start="9.95" data-playback-rate="0.93" data-track-index="3"></video>
+        </div>
+      </div>
+    </div>
+
+    <div id="cap-a" class="cap clip" data-start="0.35" data-duration="2.7" data-track-index="4">
+      <h2 id="cap-a-title"><span>Your</span> <span>passwords</span> <span>stay</span> <span>on</span> <span class="hi">your</span> <span class="hi">iPhone.</span></h2>
+      <p id="cap-a-sub">AES-256 + Argon2id. No cloud, no account.</p>
+    </div>
+    <div id="cap-b" class="cap clip" data-start="3.1" data-duration="3.95" data-track-index="5">
+      <h2 id="cap-b-title"><span class="hi">Just ask.</span></h2>
+      <p id="cap-b-sub">“gmail password” finds both logins: PC and Mobile.</p>
+    </div>
+    <div id="cap-c" class="cap clip" data-start="7.15" data-duration="2.95" data-track-index="6">
+      <h2 id="cap-c-title"><span>Spots</span> <span class="hi">reused</span> <span>passwords.</span></h2>
+      <p id="cap-c-sub">And tells you which ones to change.</p>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const cam = '#demo-cam';
+    // Phone rises into place on the lock screen (camera rest: scale 0.9).
+    tl.fromTo(cam, { y: 140, scale: 0.9, opacity: 0 }, { y: 0, scale: 0.9, opacity: 1, duration: 0.45, ease: 'expo.out' }, 0);
+
+    // A: per-word blur-in, sub-line follows.
+    tl.fromTo('#cap-a-title span', { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.14, ease: 'power4.out', stagger: 0.067 }, 0.4);
+    tl.fromTo('#cap-a-sub', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0.95);
+    tl.to('#cap-a > *', { opacity: 0, filter: 'blur(8px)', duration: 0.15, ease: 'power2.in' }, 2.88);
+
+    // B: punch in on the results while the search types; hold for the reveal.
+    tl.to(cam, { y: 159, scale: 1.3, duration: 0.55, ease: 'power2.inOut' }, 3.35);
+    tl.fromTo('#cap-b-title', { opacity: 0, filter: 'blur(8px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.16, ease: 'power4.out' }, 3.15);
+    tl.fromTo('#cap-b-sub', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' }, 3.5);
+    tl.to('#cap-b > *', { opacity: 0, filter: 'blur(8px)', duration: 0.15, ease: 'power2.in' }, 6.88);
+
+    // C: ease to the reuse warning; words go from grey to ink.
+    tl.to(cam, { y: -151, scale: 1.15, duration: 0.55, ease: 'power2.inOut' }, 7.25);
+    tl.fromTo('#cap-c-title span', { opacity: 1, color: '#3d434b' }, { color: (i, el) => (el.classList.contains('hi') ? '#5fe0c4' : '#eef1f4'), duration: 0.18, ease: 'power2.out', stagger: 0.08 }, 7.2);
+    tl.fromTo('#cap-c-sub', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' }, 7.35);
+
+    // Out: the phone shrinks into the centre (the end card's mark grows from it).
+    tl.to('#cap-c > *', { opacity: 0, filter: 'blur(8px)', duration: 0.15, ease: 'power2.in' }, 9.95);
+    tl.to(cam, { x: -330, y: 0, scale: 0.3, opacity: 0, duration: 0.45, ease: 'power3.in' }, 9.98);
+    window.__timelines['demo'] = tl;
+  </script>
+</template>

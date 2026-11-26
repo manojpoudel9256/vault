@@ -16,3 +16,14 @@ src/assets/brands/
 *.memovault.json
 vault-restore*
 vault-backup-*.json
+
+# Promo video project: keep the source, not build output
+promo/node_modules/
+promo/renders/
+promo/.hyperframes/
+promo/check.json
+promo/CLAUDE.md
+promo/AGENTS.md
+promo/.thumbnails/
+promo/.transcode-cache/
+promo/check.err

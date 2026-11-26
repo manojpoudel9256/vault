@@ -879,3 +879,6 @@ body::after {
 .sort-bar .seg { min-height: calc(32px * var(--fs)); font-size: calc(13px * var(--fs)); padding: 0 6px; }
 .section-title.time-head { margin-top: 12px; font-size: calc(13.5px * var(--fs)); color: var(--text-2); font-weight: 650; }
 .results > .sort-bar + .time-head { margin-top: 4px; }
+
+/* Edge/IE add their own reveal and clear buttons to fields; the app has its own Show button. */
+input::-ms-reveal, input::-ms-clear { display: none; }
