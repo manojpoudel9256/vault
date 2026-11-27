@@ -6,7 +6,7 @@
 Everything is encrypted on the phone. There is no server, no account and no cloud copy: the
 hosting only serves the app's code.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Vite](https://img.shields.io/badge/Vite-8-646cff) ![PWA](https://img.shields.io/badge/PWA-offline-5fe0c4) ![Tests](https://img.shields.io/badge/tests-31%20passing-2ea44f) ![Dependencies](https://img.shields.io/badge/runtime%20deps-1-informational) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6) ![Vite](https://img.shields.io/badge/Vite-8-646cff) ![PWA](https://img.shields.io/badge/PWA-offline-5fe0c4) ![Tests](https://img.shields.io/badge/tests-35%20passing-2ea44f) ![Dependencies](https://img.shields.io/badge/runtime%20deps-1-informational) ![License](https://img.shields.io/badge/license-MIT-lightgrey) [![Tests and security](https://github.com/manojpoudel9256/vault/actions/workflows/security.yml/badge.svg)](https://github.com/manojpoudel9256/vault/actions/workflows/security.yml)
 
 <p align="center">
   <img src="docs/vault-promo.gif" width="720" alt="Vault in 16 seconds: unlock, ask 'gmail password', spot reused passwords">
@@ -31,7 +31,7 @@ hosting only serves the app's code.
 ## Features
 
 - **Ask in plain words**: "gmail password", "4 digit pin of my bank", "passport number". On-device search understands synonyms, typos and PIN or password hints, and shows every match when a service has several logins (tags such as *PC* and *Mobile*).
-- **Categories with colours and logos**: passwords, bank & PINs, cards, ID documents, phone numbers, addresses, Wi-Fi and notes. Official brand logos come from [Simple Icons](https://simpleicons.org), bundled into the app.
+- **Categories with colours and logos**: passwords, bank & PINs, cards, ID documents, phone numbers, addresses, Wi-Fi and notes. Official brand logos come from [Simple Icons](https://simpleicons.org), bundled into the app. Logos for your own services (for example your banks) can be added as an encrypted **private logo pack**, so the public website never shows which services you use.
 - **Newest first**: the list opens with what you saved or changed most recently on top, under Today / Yesterday / This week headings. Switch to A–Z or By type any time.
 - **Password history**: changing a value keeps the old one with its date.
 - **Reuse warning**: flags entries that share a password or PIN and links you to a strong generator.
@@ -61,6 +61,7 @@ The demo holds 17 made-up entries ([`demo/demo-entries.json`](demo/demo-entries.
 | Network | Strict Content-Security-Policy: the page can talk only to itself and, if you turn Gemini on, `generativelanguage.googleapis.com`. No analytics, no third-party scripts or fonts. HSTS, `frame-ancestors 'none'`, `nosniff`, `no-referrer`. |
 | Gemini (off by default) | Search sends only names, tags and masked accounts. Screenshot import sends the picture you choose. A free API key's data may be used by Google, so a paid key is recommended. |
 | XSS | The UI is built with `createElement` and `textContent`, never `innerHTML` or `eval`. |
+| Private logos | Kept inside the encrypted vault, not in the site's code. Imported packs are validated: PNG or WebP data only (no SVG), size and pattern limits, unknown fields dropped. |
 
 **Not protected against:** someone who knows your passphrase (or your iPhone passcode while Face ID is on), malware on the phone, or whoever controls the hosting account. Protect that account with two-factor sign-in.
 
@@ -71,7 +72,10 @@ The code was reviewed manually and with Semgrep, Gitleaks, OSV-Scanner, npm audi
 - Restoring a backup no longer keeps the backup's passphrase; the vault is re-keyed with a new one.
 - Backup files with unsafe key settings are refused.
 - Argon2id replaced PBKDF2, with automatic upgrade of existing vaults.
+- Personal logos moved out of the public website into the encrypted vault.
 - Stronger master passphrase rules, a password reuse warning, reliable clipboard clearing on iOS, a weekly passphrase check for Face ID and a shorter auto-lock pause while picking files.
+
+Every push runs the tests, `npm audit`, Gitleaks, Semgrep, OSV-Scanner and CodeQL in [GitHub Actions](.github/workflows), and Dependabot watches the dependencies.
 
 This is a personal project and has **not** had an independent third-party audit.
 
@@ -80,7 +84,7 @@ This is a personal project and has **not** had an independent third-party audit.
 ```bash
 npm install
 npm run dev        # development server
-npm test           # 31 tests: crypto, vault, backups, Face ID, passphrase rules, sorting, demo file
+npm test           # 35 tests: crypto, vault, backups, Face ID, passphrase rules, sorting, private logos, demo file
 npm run build      # type-check and production build into dist/
 npm run preview    # serve the build with the production security headers
 ```
@@ -95,9 +99,15 @@ npx vercel --prod
 
 Then open the link in Safari on iPhone, tap **Share → Add to Home Screen**, and always open it from the icon (iOS keeps Home Screen app storage). Make an encrypted backup after big changes.
 
-### Optional local brand logos
+### Private logos for your own services
 
-`src/icons.ts` covers well-known brands. To add logos for local services (for example your banks), create a git-ignored `src/brands.local.ts` that exports `LOCAL_BRANDS` and put the icon files in `src/assets/brands/`. The app builds and runs without them.
+`src/icons.ts` covers well-known brands. Logos for your own services (for example your banks) are not built into the site, because anyone who opens it could then see which services you use. Instead:
+
+1. Put the images (PNG, ICO or WebP) and a `logos.json` in the git-ignored `private-logos/` folder:
+   `[{ "name": "mybank", "match": "my ?bank", "file": "mybank.png", "full": false, "bg": "#ffffff" }]`
+   (`match` is a case-insensitive pattern tested against the entry name; `full` means the icon is already a filled square.)
+2. Run `node scripts/make-logo-pack.mjs` (needs ffmpeg). It writes `private-logos/vault-logos.json`.
+3. Copy that file to the iPhone and choose **Settings → Private logos → Import logo pack**. The logos are stored encrypted in the vault and travel with your backups.
 
 ## Project structure
 
@@ -113,9 +123,10 @@ src/
   extract-prompt.json  instructions sent with a screenshot
   categories.ts    categories, labels and icons
   icons.ts         Phosphor icons and Simple Icons brand logos
+  logos.ts         private logo pack format and validation
   main.ts          UI (no framework)
 sw/sw.js           service worker (offline, own files only)
-scripts/           icon generator, encrypted restore-file maker
+scripts/           icon generator, encrypted restore-file maker, private logo pack maker
 tests/             node:test suites
 demo/              fake demo vault
 ```

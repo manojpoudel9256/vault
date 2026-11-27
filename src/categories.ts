@@ -33,14 +33,14 @@ export const CATEGORIES: CategoryDef[] = [
   },
   {
     id: 'bank', label: 'Bank & PIN', plural: 'Bank & PINs', icon: 'bank', hint: 'ATM PIN, mobile banking, cards, wallets',
-    nameLabel: 'Bank, card or wallet', namePlaceholder: 'Nabil Bank, eSewa, Khalti', picks: ['Nabil Bank', 'eSewa', 'Khalti', 'Global IME Bank', 'NIC Asia Bank'],
+    nameLabel: 'Bank, card or wallet', namePlaceholder: 'Your bank, eSewa, PayPal', picks: ['Mobile banking', 'ATM card', 'eSewa', 'Khalti', 'PayPal'],
     accountLabel: 'Login ID or account (optional)', accountPlaceholder: 'Login ID, account or card',
     valueLabel: { pin: 'PIN', password: 'Password', number: 'Account no.' }, types: ['pin', 'password', 'number'], masked: true, multiline: false,
     notesPlaceholder: 'Branch, SWIFT code, whose account', keywords: ['bank', 'pin', 'atm', 'card', 'wallet', 'banking', 'mpin', 'tpin', 'account'],
   },
   {
     id: 'card', label: 'Card', plural: 'Cards', icon: 'credit-card', hint: 'Credit and debit cards: number, security code',
-    nameLabel: 'Card', namePlaceholder: 'Rakuten Card, SMBC Card', picks: ['Rakuten Card', 'SMBC Card', 'Visa debit'],
+    nameLabel: 'Card', namePlaceholder: 'Rakuten Card, Visa debit', picks: ['Rakuten Card', 'Visa debit', 'Mastercard'],
     accountLabel: 'Name on card (optional)', accountPlaceholder: 'Name as printed',
     valueLabel: { number: 'Card number', pin: 'Security code (CVV)' }, types: ['number', 'pin'], masked: true, multiline: false,
     notesPlaceholder: 'Expiry date (MM/YY), card brand', keywords: ['card', 'credit', 'debit', 'visa', 'mastercard', 'jcb', 'amex', 'cvv', 'cvc', 'security code', 'expiry'],

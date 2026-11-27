@@ -23,7 +23,6 @@ const ALIASES: Record<string, string[]> = {
   wifi: ['wi-fi', 'wlan', 'router'], router: ['wifi'],
   bank: ['banking', 'ebanking', 'netbanking', 'mobilebanking'], ebanking: ['bank'], netbanking: ['bank'],
   mother: ['mom', 'mummy', 'aama'], mom: ['mother'], mummy: ['mother'], aama: ['mother'],
-  nic: ['nicasia'], nicasia: ['nic'], globalime: ['global', 'ime'], ime: ['global'],
   esewa: ['wallet'], khalti: ['wallet'], wallet: ['esewa', 'khalti'],
   linkedin: ['li'], amazon: ['amzn'], netflix: ['nflx'],
   licence: ['license', 'driving'], license: ['licence', 'driving'], driving: ['licence', 'license'],

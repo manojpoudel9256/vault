@@ -1,6 +1,7 @@
 import { deriveKeyFrom, fromB64, newKdf, seal, uid, unseal, type Kdf, type Sealed } from './crypto';
 import { kvClear, kvGet, kvSetMany } from './db';
 import { inferCategory, typeFor, type Category, type SecretType } from './categories';
+import { cleanLogos, type PrivateLogo } from './logos';
 
 export type { Category, SecretType };
 
@@ -27,6 +28,8 @@ export interface Settings {
   geminiKey: string;
   geminiModel: string;
   geminiShareAccounts: boolean;
+  /** Private logos for your own services (see logos.ts). */
+  logos: PrivateLogo[];
 }
 
 export interface VaultData { version: 1; entries: Entry[]; settings: Settings }
@@ -57,6 +60,7 @@ export const defaultSettings = (): Settings => ({
   geminiKey: '',
   geminiModel: 'gemini-2.5-flash',
   geminiShareAccounts: false,
+  logos: [],
 });
 
 let key: CryptoKey | null = null;
@@ -82,7 +86,9 @@ function normalize(d: VaultData): VaultData {
     if (label && !tags.some((t) => t.toLowerCase() === label.toLowerCase())) tags.unshift(label);
     return { ...rest, category, type: typeFor(category, oldType), history: e.history ?? [], tags };
   });
-  return { version: 1, entries, settings: { ...defaultSettings(), ...(d.settings ?? {}) } };
+  const settings = { ...defaultSettings(), ...(d.settings ?? {}) };
+  settings.logos = cleanLogos(settings.logos); // a vault or backup never brings in malformed logos
+  return { version: 1, entries, settings };
 }
 
 export async function createVault(passphrase: string): Promise<void> {
@@ -301,6 +307,7 @@ export async function restoreInto(incoming: VaultData, mode: 'merge' | 'replace'
     }
     mine.history.sort((a, b) => b.changedAt - a.changedAt);
   }
+  if (!v.settings.logos.length && incoming.settings.logos?.length) v.settings.logos = cleanLogos(incoming.settings.logos);
   await save();
   return { added, updated };
 }

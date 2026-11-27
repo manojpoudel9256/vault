@@ -4,8 +4,8 @@ import './style.css';
 
 import { append, fmtDate, h, reducedMotion, relDays, scramble, shake, toast, transition } from './dom';
 import { extractFromImage, geminiMatch, prepareImage } from './gemini';
-import { appLogo, icon, brandFor, logoSvg, type IconName } from './icons';
-import type { Draft } from './parse';
+import { appLogo, icon, brandFor, logoSvg, setLogoSource, type IconName } from './icons';
+import { parseLogoPack } from './logos';
 import { interpret, parseQuery, search } from './search';
 import { passphraseProblem, strength } from './strength';
 import { sortEntries, timeGroup, type SortMode } from './sort';
@@ -19,6 +19,12 @@ import {
   openBackup, parseBackup, restoreAsNewVault, restoreInto, reusedBy, reusedEntries, save, unlock, upsertEntry, vault,
   type Entry, type EntryInput, type SecretType,
 } from './vault';
+
+/** An entry being reviewed before it is saved (screenshot import). */
+interface Draft { category?: Category; service: string; account: string; tags?: string[]; type: SecretType; secret: string; notes: string }
+
+// Private logos live in the unlocked vault; nothing is shown while it is locked.
+setLogoSource(() => (isUnlocked() ? vault().settings.logos : []));
 
 type View = 'boot' | 'setup' | 'lock' | 'main' | 'import' | 'settings';
 
@@ -1287,6 +1293,29 @@ function settingsView(): HTMLElement {
       segmented<'merge' | 'replace'>([['merge', 'Merge'], ['replace', 'Replace all']], mode, (m) => { mode = m; }, 'Restore mode'),
       h('p', { class: 'field-help' }, 'Merge keeps the newest version of each entry. Replace all deletes what is here first.')),
     restoreErr, restoreBtn,
+  ));
+
+  // Private logos: kept inside the encrypted vault, so the public website never lists your services.
+  const logoErr = h('p', { class: 'field-error', role: 'alert' });
+  const logoInput = h('input', {
+    type: 'file', class: 'visually-hidden', accept: '.json,application/json', onchange: async () => {
+      logoErr.textContent = '';
+      const f = logoInput.files?.[0];
+      logoInput.value = '';
+      if (!f) return;
+      if (f.size > 8_000_000) { logoErr.textContent = 'This file is too big to be a logo pack.'; return; }
+      try { s.logos = parseLogoPack(await f.text()); } catch (x) { logoErr.textContent = (x as Error).message; return; }
+      await save();
+      toast(`${s.logos.length} private logos added`);
+      render();
+    },
+  });
+  wrap.append(group('Private logos',
+    h('div', { class: 'kv' }, h('span', {}, 'Logos in your vault'), h('strong', {}, String(s.logos.length))),
+    h('p', { class: 'group-note' }, 'Logos for your own services, such as your banks. They are stored encrypted inside your vault and its backups, not on the website, so nobody can see which services you use.'),
+    h('label', { class: 'file-pick', onclick: () => pauseLockForPicker(logoInput) }, logoInput, icon('file-arrow-up'), h('span', {}, s.logos.length ? 'Replace logo pack' : 'Import logo pack')),
+    logoErr,
+    ...(s.logos.length ? [btn('Remove private logos', async () => { s.logos = []; await save(); toast('Private logos removed'); render(); }, { kind: 'ghost' })] : []),
   ));
 
   // Security
